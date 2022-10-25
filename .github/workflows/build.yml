@@ -60,6 +60,9 @@ jobs:
       - name: Load images 
         run: |
           docker load --input "spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}.tar.gz"
+      - name: Set docker-compose to use temporary images
+        run: |
+          sed -i "s/docker.io\/dantefromhell\/spaceport:stable/ghcr.io\/${GITHUB_REPOSITORY_OWNER}\/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}/g" docker-compose.prod.yml
       - name: Spin up services
         run: docker-compose -f docker-compose.prod.yml up -d
       - name: Wait 
