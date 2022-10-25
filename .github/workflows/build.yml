@@ -31,7 +31,7 @@ jobs:
           docker build \
             --build-arg VCS_REF="${GIT_REV}" \
             --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
-            --build-arg SPACEPORT_VERSION=${SPACEPORT_VERSION}" \
+            --build-arg SPACEPORT_VERSION="${SPACEPORT_VERSION}" \
             --target base \
             --tag "ghcr.io/${CI_REPOSITORY_OWNER}/spaceport:${CI_REF_NAME_SLUG}-git-${GIT_REV}" \
             .
