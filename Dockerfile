@@ -1,5 +1,17 @@
 FROM node:19-alpine3.16 as base
 
+ARG SPACEPORT_VERSION
+ARG VCS_REF
+ARG BUILD_DATE
+LABEL name="Spaceport" version="${SPACEPORT_VERSION}-git-${VCS_REF}" variant="base" \
+      org.label-schema.build-date=${BUILD_DATE} \
+      org.label-schema.name="Spaceport" \
+      org.label-schema.description="Collaborative, team-focused TiddlyWiki docker image" \
+      org.label-schema.vcs-ref=${VCS_REF} \
+      org.label-schema.vcs-url="https://github.com/dantefromhell/spaceport" \
+      org.label-schema.version="${SPACEPORT_VERSION}-git-${VCS_REF}" \
+      org.label-schema.schema-version="1.0"
+
 ENV NODE_ENV production
 
 RUN apk update && apk upgrade && \

@@ -20,6 +20,9 @@ jobs:
       - uses: FranzDiebold/github-env-vars-action@v2.7.0
       - name: Set build version
         run: |
+          SPACEPORT_VERSION="${{ matrix.version }}"
+          export SPACEPORT_VERSION
+          echo "SPACEPORT_VERSION=$SPACEPORT_VERSION" >> "$GITHUB_ENV"
           GIT_REV=$(git rev-parse --short HEAD)
           export GIT_REV
           echo "GIT_REV=$GIT_REV" >> "$GITHUB_ENV"
@@ -28,6 +31,7 @@ jobs:
           docker build \
             --build-arg VCS_REF="${GIT_REV}" \
             --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            --build-arg SPACEPORT_VERSION="${SPACEPORT_VERSION}" \
             --target base \
             --tag "ghcr.io/${CI_REPOSITORY_OWNER}/spaceport:${CI_REF_NAME_SLUG}-git-${GIT_REV}" \
             .
@@ -52,6 +56,9 @@ jobs:
       - uses: FranzDiebold/github-env-vars-action@v2.7.0
       - name: Set build version
         run: |
+          SPACEPORT_VERSION="${{ matrix.version }}"
+          export SPACEPORT_VERSION
+          echo "SPACEPORT_VERSION=$SPACEPORT_VERSION" >> "$GITHUB_ENV"
           GIT_REV=$(git rev-parse --short HEAD)
           export GIT_REV
           echo "GIT_REV=$GIT_REV" >> "$GITHUB_ENV"
