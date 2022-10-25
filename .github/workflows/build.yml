@@ -72,7 +72,7 @@ jobs:
       - name: Show spaceport logs
         run: docker logs spaceport-1
       - name: Test
-        run: curl http://localhost:8080/ -L --fail -s | grep 'Sign in</button>' -q
+        run: curl http://localhost:8080/ -L --fail -s | grep 'contains the following tiddlers' -q
 
   push_ghcr:
     needs: ["test_prod"]
