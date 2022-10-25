@@ -34,7 +34,7 @@ jobs:
           docker save "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}" \
             | gzip > "spaceport-${{ matrix.version }}-git-${GIT_REV}.tar.gz"
       - name: Upload image archive
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}
           path: spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}.tar.gz
