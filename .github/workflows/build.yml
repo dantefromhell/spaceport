@@ -3,9 +3,9 @@ name: Build
 
 on:
   pull_request:
-    branches: [master]
+    branches: [head]
   push:
-    branches: [master]
+    branches: [head]
   workflow_dispatch:
 
 jobs:
