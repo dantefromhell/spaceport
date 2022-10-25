@@ -1,0 +1,19 @@
+# NOTE: This files shows a possible production setup.
+---
+version: '3.1'
+services:
+  spaceport:
+    image: docker.io/dantefromhell/spaceport:stable
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+#TODO    environment:
+    volumes:
+      - "wiki-data:/var/local/tiddlywiki"
+
+volumes:
+  wiki-data: { }
