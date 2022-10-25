@@ -1,0 +1,101 @@
+---
+name: Build
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build_base:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["0.0.1-ALPHA"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set build version
+        run: |
+          GIT_REV=$(git rev-parse --short HEAD)
+          export GIT_REV
+          echo "GIT_REV=$GIT_REV" >> "$GITHUB_ENV"
+      - name: Build docker image
+        run: |
+          docker build \
+            --build-arg VCS_REF="${GIT_REV}" \
+            --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            --target base \
+            --tag "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}" \
+            .
+          docker save "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}" \
+            | gzip > "spaceport-${{ matrix.version }}-git-${GIT_REV}.tar.gz"
+      - name: Upload image archive
+        uses: actions/upload-artifact@v2
+        with:
+          name: spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}
+          path: spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}.tar.gz
+
+
+  test_prod:
+    needs: build_base
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["0.0.1-ALPHA"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set build version
+        run: |
+          GIT_REV=$(git rev-parse --short HEAD)
+          export GIT_REV
+          echo "GIT_REV=$GIT_REV" >> "$GITHUB_ENV"
+      - name: Download image archive
+        uses: actions/download-artifact@v2
+        with:
+          name: spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}
+      - name: Load images 
+        run: |
+          docker load --input "spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}.tar.gz"
+      - name: Spin up services
+        run: docker-compose -f docker-compose.prod.yml up -d
+      - name: Wait 
+        run: sleep 120
+      - name: Check status
+        run: docker ps -a
+      - name: Show spaceport logs
+        run: docker logs spaceport-1
+      - name: Test
+        run: curl http://localhost:8080/ -L --fail -s | grep 'Sign in</button>' -q
+
+  push_ghcr:
+    needs: ["test_prod"]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["0.0.1-ALPHA"]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: FranzDiebold/github-env-vars-action@v1.2.1
+      - name: Login to registry
+        run: echo "${{ secrets.PAT }}" | docker login ghcr.io --username "${GITHUB_REPOSITORY_OWNER}" --password-stdin
+      - name: Set build version
+        run: |
+          GIT_REV=$(git rev-parse --short HEAD)
+          export GIT_REV
+          echo "GIT_REV=$GIT_REV" >> "$GITHUB_ENV"
+      - name: Download image archive
+        uses: actions/download-artifact@v2
+        with:
+          name: spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}
+      - name: Load, retag and Push images 
+        run: |
+          docker load --input "spaceport-${{ matrix.version }}-git-${GIT_REV}.tar.gz"
+          docker tag "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}" \
+            "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${{ matrix.version }}-git-${GIT_REV}"
+          docker push "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}"
