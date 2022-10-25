@@ -79,7 +79,7 @@ jobs:
   push_ghcr:
     needs: ["test_prod"]
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/head' }}
     strategy:
       fail-fast: false
       matrix:
