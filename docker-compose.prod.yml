@@ -11,5 +11,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-#TODO    volumes:
 #TODO    environment:
+    volumes:
+      - "wiki-data:/var/local/tiddlywiki"
+
+volumes:
+  wiki-data: { }
