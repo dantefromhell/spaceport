@@ -74,9 +74,9 @@ jobs:
       - name: Show spaceport logs
         run: docker logs spaceport_spaceport_1
       - name: Debug Bob
-        run: curl http://localhost:8080/ -L --fail -s
+        run: curl http://localhost:8080/ --location
       - name: Test
-        run: curl http://localhost:8080/ -L --fail -s | grep 'contains the following tiddlers' -q
+        run: curl http://localhost:8080/ --location --fail --silent | grep 'contains the following tiddlers' -q
 
   push_ghcr:
     needs: ["test_prod"]
