@@ -73,6 +73,8 @@ jobs:
         run: docker ps -a
       - name: Show spaceport logs
         run: docker logs spaceport_spaceport_1
+      - name: Debug Bob
+        run: curl http://localhost:8080/ -L --fail -s
       - name: Test
         run: curl http://localhost:8080/ -L --fail -s | grep 'contains the following tiddlers' -q
 
