@@ -29,9 +29,9 @@ jobs:
             --build-arg VCS_REF="${GIT_REV}" \
             --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
             --target base \
-            --tag "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}" \
+            --tag "ghcr.io/${CI_REPOSITORY_OWNER}/spaceport:${CI_REF_NAME_SLUG}-git-${GIT_REV}" \
             .
-          docker save "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}" \
+          docker save "ghcr.io/${CI_REPOSITORY_OWNER}/spaceport:${CI_REF_NAME_SLUG}-git-${GIT_REV}" \
             | gzip > "spaceport-${{ matrix.version }}-git-${GIT_REV}.tar.gz"
       - name: Upload image archive
         uses: actions/upload-artifact@v3
@@ -64,7 +64,7 @@ jobs:
           docker load --input "spaceport-${{ matrix.version }}-git-${{ env.GIT_REV }}.tar.gz"
       - name: Set docker-compose to use temporary images
         run: |
-          sed -i "s/docker.io\/dantefromhell\/spaceport:stable/ghcr.io\/${GITHUB_REPOSITORY_OWNER}\/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}/g" docker-compose.prod.yml
+          sed -i "s/docker.io\/dantefromhell\/spaceport:stable/ghcr.io\/${CI_REPOSITORY_OWNER}\/spaceport:${CI_REF_NAME_SLUG}-git-${GIT_REV}/g" docker-compose.prod.yml
       - name: Spin up services
         run: docker-compose -f docker-compose.prod.yml up -d
       - name: Wait 
@@ -90,7 +90,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: FranzDiebold/github-env-vars-action@v2.7.0
       - name: Login to registry
-        run: echo "${{ secrets.PAT }}" | docker login ghcr.io --username "${GITHUB_REPOSITORY_OWNER}" --password-stdin
+        run: echo "${{ secrets.PAT }}" | docker login ghcr.io --username "${CI_REPOSITORY_OWNER}" --password-stdin
       - name: Set build version
         run: |
           GIT_REV=$(git rev-parse --short HEAD)
@@ -103,6 +103,6 @@ jobs:
       - name: Load, retag and Push images 
         run: |
           docker load --input "spaceport-${{ matrix.version }}-git-${GIT_REV}.tar.gz"
-          docker tag "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}" \
-            "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${{ matrix.version }}-git-${GIT_REV}"
-          docker push "ghcr.io/${GITHUB_REPOSITORY_OWNER}/spaceport:${GITHUB_REF_NAME_SLUG}-git-${GIT_REV}"
+          docker tag "ghcr.io/${CI_REPOSITORY_OWNER}/spaceport:${CI_REF_NAME_SLUG}-git-${GIT_REV}" \
+            "ghcr.io/${CI_REPOSITORY_OWNER}/spaceport:${{ matrix.version }}-git-${GIT_REV}"
+          docker push "ghcr.io/${CI_REPOSITORY_OWNER}/spaceport:${CI_REF_NAME_SLUG}-git-${GIT_REV}"
