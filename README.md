@@ -17,3 +17,10 @@ information can be arranged and curated spatially. Through addition and curation
 space to grow and gain clarity and transform into actionable projects.
 
 Inspired by the processes in the human brain, but for remote-first teams.
+
+## Phases
+
+As of 2022-10-15 development is planned in the following phases:
+- **Phase1** - Implementing an up-to-date *TW5-Bob* docker image + docker compose instructions + sane default configuration
+- **Phase2** - Adding collaborative editing 
+- **Phase3** - Adding additional plugins to facilitate non-linear exploration and management of content
