@@ -3,7 +3,7 @@
 version: '3.1'
 services:
   spaceport:
-    image: docker.io/dantefromhell/spaceport:stable
+    image: ghcr.io/dantefromhell/spaceport:stable
     ports:
       - "8080:8080"
     healthcheck:
