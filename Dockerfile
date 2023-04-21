@@ -1,4 +1,4 @@
-FROM node:19-alpine3.16 as base
+FROM node:20-alpine3.16 as base
 
 ARG SPACEPORT_VERSION
 ARG VCS_REF
