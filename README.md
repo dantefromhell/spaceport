@@ -1,3 +1,6 @@
+# Update 2023-09-02 - Project is deprecated
+
+The tool has not proven to support the workflow I was envisioning, therefore I'm archiving this project.
 
 > Space - The final Frontier
 >
